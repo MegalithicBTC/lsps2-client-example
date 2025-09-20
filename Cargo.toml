@@ -1,0 +1,24 @@
+[package]
+name = "megalith_lsps2"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "megalith_lsps2"
+path = "src/lib.rs"
+
+[[bin]]
+name = "make_invoice"
+path = "src/bin/make_invoice.rs"
+
+[[bin]]
+name = "pay_invoice"
+path = "src/bin/pay_invoice.rs"
+
+[dependencies]
+ldk-node = "0.6.0"
+env_logger = "0.11"
+log = "0.4"
+ctrlc = "3.4"
+dotenvy = "0.15"
+

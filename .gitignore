@@ -1,0 +1,7 @@
+/target
+.vscode 
+!tmp/.keep
+tmp/*
+
+# Environment variables (contains sensitive configuration)
+.env
