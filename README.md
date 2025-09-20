@@ -1,4 +1,4 @@
-Basic usage of the Megalith LSPS2 service, currently running on MutinyNet, can be demonstrated in the following way:
+Basic usage of the Megalith LSPS2 service, can be demonstrated in the following way:
 
 1. Clone this repository
 
@@ -15,7 +15,7 @@ Basic usage of the Megalith LSPS2 service, currently running on MutinyNet, can b
 
 5. `cargo run --bin make_invoice` This generates a private invoice from the Client LDK node.
 
-You can pay the invoice from any node (or from the MutinyNet Faucet) and the balance will reflect in the LDK client.
+You can pay the invoice from any node and the balance will reflect in the LDK client.
 
 5. `cargo run --bin pay_invoice <bolt11-invoice>` Pay an existing BOLT11 invoice using the LDK client.
 
@@ -54,5 +54,3 @@ The application uses environment variables for configuration. You can either:
 | `NETWORK`         | Bitcoin network to use                | `bitcoin` (options: bitcoin, testnet, regtest, signet) |
 | `ESPLORA_API_URL` | Blockchain data API endpoint          | `https://blockstream.info/api`                         |
 | `LOG_LEVEL`       | Application log level                 | `Debug` (options: Trace, Debug, Info, Warn, Error)     |
-
-> **⚠️ Security Note**: Never commit your `.env` file to version control. It's already included in `.gitignore` for your protection.
