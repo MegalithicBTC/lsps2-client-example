@@ -15,6 +15,10 @@ path = "src/bin/make_invoice.rs"
 name = "pay_invoice"
 path = "src/bin/pay_invoice.rs"
 
+[[bin]]
+name = "sweep_onchain"
+path = "src/bin/sweep_onchain.rs"
+
 [dependencies]
 ldk-node = "0.6.0"
 env_logger = "0.11"
