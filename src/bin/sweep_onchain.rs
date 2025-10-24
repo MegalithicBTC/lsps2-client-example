@@ -27,6 +27,15 @@ fn main() {
 		process::exit(2);
 	});
 
+	// ── check initial balance (before sync) ───────────────────────────────
+	println!("Checking current balances...");
+	let initial_balances = node.list_balances();
+	println!("Initial on-chain balances (may not be fully synced):");
+	println!("  Total:            {} sats", initial_balances.total_onchain_balance_sats);
+	println!("  Spendable:        {} sats", initial_balances.spendable_onchain_balance_sats);
+	println!("  Lightning total:  {} sats", initial_balances.total_lightning_balance_sats);
+	println!();
+
 	// ── wait until wallets are usable (and fee cache filled) ──────────────
 	// node.start() already launched background tasks; we just force a sync and retry briefly if chain source isn't ready yet
 	let mut attempts = 0;
@@ -45,6 +54,19 @@ fn main() {
 		}
 	}
 
+	// ── check and display current balance ─────────────────────────────────
+	let balances = node.list_balances();
+	println!("Current on-chain balances:");
+	println!("  Total:            {} sats", balances.total_onchain_balance_sats);
+	println!("  Spendable:        {} sats", balances.spendable_onchain_balance_sats);
+	println!("  Lightning total:  {} sats", balances.total_lightning_balance_sats);
+	println!();
+
+	if balances.spendable_onchain_balance_sats == 0 {
+		eprintln!("No spendable on-chain balance to sweep!");
+		process::exit(5);
+	}
+
 	// ── sweep ─────────────────────────────────────────────────────────────
 	// If retain_reserves=true we leave anchor reserves; with --no-reserves we attempt a full drain.
 	let retain_reserves = !drain_including_anchor_reserves;
@@ -52,6 +74,12 @@ fn main() {
 		Ok(txid) => {
 			println!("SWEEP BROADCAST txid={txid}");
 			println!("Logs ➜ {log_path}");
+			println!("\nKeeping node online to monitor transaction...");
+			
+			// Keep node running to allow transaction to be broadcast and monitored
+			loop {
+				thread::sleep(Duration::from_secs(60));
+			}
 		}
 		Err(e) => {
 			eprintln!("sweep failed: {e}");
