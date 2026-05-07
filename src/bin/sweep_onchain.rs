@@ -1,6 +1,6 @@
-use std::{env, process, thread, time::Duration};
 use ldk_node::bitcoin::{Address, Network};
 use megalith_lsps2::setup_node;
+use std::{env, process, thread, time::Duration};
 
 fn main() {
 	// ── args ───────────────────────────────────────────────────────────────
@@ -17,15 +17,19 @@ fn main() {
 
 	// get node network first to validate address
 	let node_net: Network = node.config().network;
-	
+
 	// parse and validate address for the correct network
-	let addr: Address = addr_str.parse::<Address<_>>().unwrap_or_else(|e| {
-		eprintln!("invalid address: {e}");
-		process::exit(2);
-	}).require_network(node_net).unwrap_or_else(|e| {
-		eprintln!("address is not valid for network {:?}: {e}", node_net);
-		process::exit(2);
-	});
+	let addr: Address = addr_str
+		.parse::<Address<_>>()
+		.unwrap_or_else(|e| {
+			eprintln!("invalid address: {e}");
+			process::exit(2);
+		})
+		.require_network(node_net)
+		.unwrap_or_else(|e| {
+			eprintln!("address is not valid for network {:?}: {e}", node_net);
+			process::exit(2);
+		});
 
 	// ── check initial balance (before sync) ───────────────────────────────
 	println!("Checking current balances...");
@@ -50,7 +54,7 @@ fn main() {
 				}
 				eprintln!("wallet sync not ready: {e}; retrying…");
 				thread::sleep(Duration::from_secs(2));
-			}
+			},
 		}
 	}
 
@@ -75,15 +79,15 @@ fn main() {
 			println!("SWEEP BROADCAST txid={txid}");
 			println!("Logs ➜ {log_path}");
 			println!("\nKeeping node online to monitor transaction...");
-			
+
 			// Keep node running to allow transaction to be broadcast and monitored
 			loop {
 				thread::sleep(Duration::from_secs(60));
 			}
-		}
+		},
 		Err(e) => {
 			eprintln!("sweep failed: {e}");
 			process::exit(4);
-		}
+		},
 	}
 }

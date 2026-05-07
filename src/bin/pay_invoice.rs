@@ -1,7 +1,7 @@
-use std::{env, thread, time::Duration};
 use ldk_node::lightning_invoice::Bolt11Invoice;
 use ldk_node::payment::PaymentStatus; // available in ldk-node 0.6.x
 use megalith_lsps2::setup_node;
+use std::{env, thread, time::Duration};
 
 fn main() {
 	// ── paths ──────────────────────────────────────────────────────────────
@@ -40,8 +40,12 @@ fn main() {
 		}
 
 		for c in &chans {
-			if c.is_channel_ready { ready += 1; }
-			if c.is_usable { usable += 1; }
+			if c.is_channel_ready {
+				ready += 1;
+			}
+			if c.is_usable {
+				usable += 1;
+			}
 			total_out_msat = total_out_msat.saturating_add(c.outbound_capacity_msat);
 
 			let scid = c.short_channel_id.map(|v| v.to_string()).unwrap_or_else(|| "-".into());
@@ -76,12 +80,17 @@ fn main() {
 			Ok(pid) => {
 				println!("attempt={} sent id={pid:?}", attempt);
 				break pid;
-			}
+			},
 			Err(e) => {
-				eprintln!("attempt={} immediate send failed: {e}; retrying in {}s", attempt, backoff);
+				eprintln!(
+					"attempt={} immediate send failed: {e}; retrying in {}s",
+					attempt, backoff
+				);
 				thread::sleep(Duration::from_secs(backoff));
-				if backoff < 30 { backoff = (backoff * 2).min(30); }
-			}
+				if backoff < 30 {
+					backoff = (backoff * 2).min(30);
+				}
+			},
 		}
 	};
 
@@ -96,28 +105,36 @@ fn main() {
 				seen = true;
 				match p.status {
 					PaymentStatus::Succeeded => {
-						println!("payment id={:?} SUCCEEDED amount_msat={}", p.id, p.amount_msat.unwrap_or(0));
-						loop { thread::sleep(Duration::from_secs(30)); }
-					}
+						println!(
+							"payment id={:?} SUCCEEDED amount_msat={}",
+							p.id,
+							p.amount_msat.unwrap_or(0)
+						);
+						loop {
+							thread::sleep(Duration::from_secs(30));
+						}
+					},
 					PaymentStatus::Failed => {
 						eprintln!("payment id={:?} FAILED; retrying in {}s", p.id, backoff);
 						thread::sleep(Duration::from_secs(backoff));
-						if backoff < 30 { backoff = (backoff * 2).min(30); }
+						if backoff < 30 {
+							backoff = (backoff * 2).min(30);
+						}
 
 						attempt += 1;
 						match node.bolt11_payment().send(&invoice, None) {
 							Ok(new_id) => {
 								println!("attempt={} re-sent id={new_id:?}", attempt);
 								current_payment_id = new_id;
-							}
+							},
 							Err(e) => {
 								eprintln!("attempt={} re-send failed immediately: {e}", attempt);
-							}
+							},
 						}
-					}
+					},
 					PaymentStatus::Pending => {
 						// In flight; keep waiting
-					}
+					},
 				}
 			}
 		}

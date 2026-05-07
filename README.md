@@ -17,13 +17,35 @@ Basic usage of the Megalith LSPS2 service, can be demonstrated in the following 
 
 You can pay the invoice from any node and the balance will reflect in the LDK client.
 
-5. `cargo run --bin pay_invoice <bolt11-invoice>` Pay an existing BOLT11 invoice using the LDK client.
+6. `cargo run --bin pay_invoice <bolt11-invoice>` Pay an existing BOLT11 invoice using the LDK client.
+
+7. `cargo run --bin node_info` Print node identity, sync status, balances, peers, channels, and recent payments.
 
 ## Available Binaries
 
 - **`megalith_lsps2`**: Main binary that creates JIT invoices via LSPS2 service
 - **`make_invoice`**: Creates standard invoices (10,000 satoshis) from the LDK client
 - **`pay_invoice`**: Pays BOLT11 invoices with embedded amounts using the LDK client
+- **`node_info`**: Prints the LDK client's public key, balances, peers, channels, and recent payments
+
+## Inspecting the Node
+
+Run the `node_info` binary to inspect the LDK client state stored under `tmp`:
+
+```bash
+cargo run --bin node_info
+```
+
+It starts the same node used by `make_invoice`, attempts a wallet sync, prints a one-shot report, then shuts the node down cleanly. The report includes:
+
+- public key and network
+- current sync status and best block
+- on-chain and Lightning balances
+- connected and persisted peers
+- channel IDs, counterparties, SCIDs, readiness, usability, capacity, and liquidity
+- the most recent payments
+
+Logs are written to `tmp/node_info.log`.
 
 ## Configuration
 

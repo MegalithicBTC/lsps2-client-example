@@ -16,6 +16,10 @@ name = "pay_invoice"
 path = "src/bin/pay_invoice.rs"
 
 [[bin]]
+name = "node_info"
+path = "src/bin/node_info.rs"
+
+[[bin]]
 name = "sweep_onchain"
 path = "src/bin/sweep_onchain.rs"
 
